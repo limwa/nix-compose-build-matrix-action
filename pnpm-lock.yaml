@@ -39,6 +39,9 @@ importers:
       rolldown:
         specifier: 1.0.0-rc.6
         version: 1.0.0-rc.6
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
 packages:
 
