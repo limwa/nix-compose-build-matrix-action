@@ -2,6 +2,7 @@
   "name": "javascript-action",
   "description": "GitHub Actions JavaScript Template",
   "version": "0.0.0",
+  "packageManager": "pnpm@10.28.2",
   "author": "",
   "type": "module",
   "private": true,
