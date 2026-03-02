@@ -9,6 +9,8 @@ import { vi, beforeEach, afterEach, it, describe, expect } from 'vitest'
 import * as core from '@actions/core'
 import { wait } from '../src/wait.js'
 import { run } from '../src/main.js'
+import { Effect } from 'effect'
+import { ValidationError } from '../src/errors.js'
 
 vi.mock(import('@actions/core'), { spy: true })
 vi.mock(import('../src/wait.js'), { spy: true })
@@ -19,7 +21,7 @@ describe('main.js', () => {
     vi.mocked(core.getInput).mockImplementation(() => '500')
 
     // Mock the wait function so that it does not actually wait.
-    vi.mocked(wait).mockImplementation(() => Promise.resolve('done!'))
+    vi.mocked(wait).mockImplementation(() => Effect.succeed('done!'))
   })
 
   afterEach(() => {
@@ -27,7 +29,7 @@ describe('main.js', () => {
   })
 
   it('Sets the time output', async () => {
-    await run()
+    await Effect.runPromise(run)
 
     // Verify the time output was set.
     expect(core.setOutput).toHaveBeenNthCalledWith(
@@ -47,9 +49,13 @@ describe('main.js', () => {
     // Clear the wait mock and return a rejected promise.
     vi.mocked(wait)
       .mockClear()
-      .mockRejectedValueOnce(new Error('milliseconds is not a number'))
+      .mockReturnValue(
+        Effect.fail(
+          new ValidationError({ message: 'milliseconds is not a number' })
+        )
+      )
 
-    await run()
+    await Effect.runPromiseExit(run)
 
     // Verify that the action was marked as failed.
     expect(core.setFailed).toHaveBeenNthCalledWith(
