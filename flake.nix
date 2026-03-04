@@ -40,5 +40,23 @@
             ];
           };
       };
+
+      apps = utils.lib.invokeAttrs {
+        default = {outputs, ...}: outputs.apps.update-licenses;
+
+        update-licenses = {pkgs, ...}: {
+          type = "app";
+          program = let
+            script = pkgs.writeShellApplication {
+              name = "update-licenses";
+              runtimeInputs = [pkgs.licensed];
+
+              text = ''
+                licensed cache
+              '';
+            };
+          in "${script}/bin/update-licenses";
+        };
+      };
     };
 }
